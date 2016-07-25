@@ -15,6 +15,7 @@ PoC.applyRefiners = function(control) {
         }
     });
 
+//This is for single refiner 
     //var token = $('input[data-displayvalue="Initiate"]').val();
     //var token2 = $('input[data-displayvalue="Consumer"]').val();
     //var token3 = $('input[data-displayvalue="pdf"]').val();
@@ -23,6 +24,7 @@ PoC.applyRefiners = function(control) {
     //var refiners = [];
     //Srch.U.appendArray(refiners, token);
     //control.updateRefinementFilters(name, refiners, 'or', false, null);
+//End single refiner
 
     //var ref = {};
     //ref['RefinableString00'] = [token];
@@ -30,16 +32,26 @@ PoC.applyRefiners = function(control) {
     //ref['FileType'] = [token3];
     //control.updateRefiners(ref, 'or', false, null);
 
+//TODO: compare current selected refiners and new selection. if un-selected any existing refiner
+//      needs to call removeRefinementFilter function
+    var token = $('input[data-displayvalue="Initiate"]').val();
+    var removed = {};
+    removed['RefinableString00'] = [token];
+
+
+
     console.log(PoC.getCurrentAppliedRefiners(control));
     console.log(ref);
+
+    control.removeRefinementFilters(removed);
     control.updateRefiners(ref, 'or', false, null);
 }
 
 PoC.clearRefiners = function(control) {
     var ref = {};
-    ref['RefinableString00'] = [];
-    ref['RefinableString01'] = [];
-    ref['FileType']          = [];
+    $.each(PoC.Filters, function(idx, val) {
+        ref[val] = [];
+    });
 
     control.updateRefiners(ref, 'or', false, null);
 }
