@@ -5,7 +5,6 @@ PoC['Filters'] = [];
 PoC.applyRefiners = function(control) {
     var ref = {};
     $.each(PoC.Filters, function(idx, value) {
-        console.log(value);
         var parent = $('div[refinername="' + value + '"]');
         var selected = parent.find('input[type="checkbox"]:checked');
         if (selected.length > 0) {
@@ -34,13 +33,33 @@ PoC.applyRefiners = function(control) {
 
 //TODO: compare current selected refiners and new selection. if un-selected any existing refiner
 //      needs to call removeRefinementFilter function
-    var token = $('input[data-displayvalue="Initiate"]').val();
+    //var token = $('input[data-displayvalue="Initiate"]').val();
+    //var removed = {};
+    //removed['RefinableString00'] = [token];
+
+
     var removed = {};
-    removed['RefinableString00'] = [token];
+    var current = PoC.getCurrentAppliedRefiners(control);
+    $.each(current, function(idx, val) {
+        var propName = val.n;
+        if (!ref.hasOwnProperty(propName)) {
+            removed[propName] = val.t;
+        } else {
+            var currFilter = val.t;
+            var newFilters = ref[propName];
+            var tmp = [];
 
+            $.grep(currFilter, function(el) {
+                if ($.inArray(el, newFilters) == -1) 
+                    tmp.push(el);
+            });
 
+            if (tmp.length > 0)
+                removed[propName] = tmp;
+        }
+    });
 
-    console.log(PoC.getCurrentAppliedRefiners(control));
+    console.log(removed);
     console.log(ref);
 
     control.removeRefinementFilters(removed);
@@ -88,8 +107,6 @@ PoC.getCurrentAppliedRefiners = function(cc) {
 }
 
 Srch.RefinementCategory.prototype.toString = function () {
-    console.log('toString', this);
-
     var refinementFilter = '';
     if (Srch.U.n(this.t) || !this.t.length) {
         return refinementFilter;
